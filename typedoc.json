@@ -1,0 +1,16 @@
+{
+    "readme": "none",
+    "name": "Mimstate Reference",
+	"excludeExternals": true,
+    "excludeInternal": true,
+    "excludePrivate": true,
+    "disableSources": true,
+    "hideGenerator": true,
+    "includeVersion": true,
+	"includes": "./src/typedoc",
+	"out": "./web/reference",
+    "entryPointStrategy": "expand",
+	"entryPoints": [
+		"./src/api/"
+	]
+}
