@@ -1,2 +1,11 @@
-# mimstate
-Persist view state beyond component life-cycle.
+# Mimstate: Persist view state beyond component life-cycle.
+
+JavaScript components almost necessarily use state variables to remember parameter values that determine the aspects of component layout, e.g. whether an item is displayed or hidden. This kind of state is usually referred to as "view state" in order to distinguish it from the "data state", on which the component operates. While the data state initial value is usually provided to the component in properties, the view state is normally internal to the component. Moreover, while the data state exists outside of the component (before the component is created and/or after the component is destroyed), the view state is only created when the component is created and vanishes when the component is destroyed.
+
+Consider an example of a fictitious ToDoItem component, which has a title, a date and a description. The component always displays the title and the date while the description can be shown or hidden when the user clicks a small button. In this simple case, the title, date and description are pieces of the data state while the flag whether the description is hidden is a view state.
+
+The problem arises when there is a need to remember the view state across different instances of the component. For example, if the user clicks the button on the ToDoItem component to show the description, then navigates to a different page and then navigates back to this item, it would be much more user-friendly to show the description right away instead of displaying it hidden and forcing the user to click the button again to reveal it. That is, there is a need to persist the view state beyond the normal life-cycle of the component.
+
+The usual solution to the above problem is to use either session or local storage to keep the latest values of the view state variables. When the component is mounted, the value is read form the storage and (if exists) is used as an initial state value. Every time the state value changes, the new value is written to the storage. Although, this is a simple process, it requires from the developers to write quite a lot of boilerplate code.
+
+Mimstate is a small library that implements this boilerplate code and provides to the developers an easy-to-use and clean API - both imperative and declarative.

@@ -1,6 +1,7 @@
 {
     "readme": "none",
     "name": "Mimstate Reference",
+    "useTsLinkResolution": true,
 	"excludeExternals": true,
     "excludeInternal": true,
     "excludePrivate": true,
