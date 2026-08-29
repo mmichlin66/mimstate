@@ -18,7 +18,7 @@ import {GetStateVarFunc, StateVarConfig, IStateVarHandler, StateVarOptions, IReg
  */
 export function getStateVar<T>(key: string, init: StateVarInitValue<T>, options?: StateVarOptions): IStateVarHandler<T>
 {
-    return getStateVarHandler.call({}, key, init, options);
+    return (getStateVarHandler<T>).call({}, key, init, options);
 }
 
 
@@ -49,7 +49,7 @@ export function getStateVar<T>(key: string, init: StateVarInitValue<T>, options?
  */
 export function configStateVarFunc(config: StateVarConfig): GetStateVarFunc
 {
-    return getStateVarHandler.bind(config);
+    return (getStateVarHandler<any>).bind(config);
 }
 
 
@@ -140,13 +140,13 @@ class ScopeCache
     private storageKey: string;
 
     /** Cached variable state values */
-    private vars: { [Key: string]: any };
+    private vars?: { [Key: string]: any };
 
     /**
      * Flag indicating that a serialization task has been queued for this object but has not
      * run yet.
      */
-    private writeScheduled: boolean;
+    private writeScheduled: boolean = false;
 
     constructor(app: string, scope: string, storage: Storage | keyof IRegisteredStorageAreas)
     {
@@ -170,7 +170,7 @@ class ScopeCache
         // deserialize the object from the storage if not deserialized yet
         this.read();
 
-        return key in this.vars;
+        return this.vars ? key in this.vars : false;
     }
 
     /**
@@ -181,7 +181,7 @@ class ScopeCache
         // deserialize the object from the storage if not deserialized yet
         this.read();
 
-        return (key in this.vars)
+        return (this.vars && key in this.vars)
             ? this.vars[key]
             : typeof defaultVal === "function"
                 ? defaultVal(key)
@@ -195,18 +195,18 @@ class ScopeCache
     setVar(key: string, newVal: any): void
     {
         // deserialize the object from the storage if not deserialized yet
-        this.read();
+        let vars = this.read();
 
         // if the same value for the key already exists in the cache, do nothing
-        if (key in this.vars)
+        if (key in vars)
         {
-            let oldVal = this.vars[key];
+            let oldVal = vars[key];
             if (newVal === oldVal)
                 return;
         }
 
         // keep the new value in the cache
-        this.vars[key] = newVal;
+        vars[key] = newVal;
 
         // schedule serialization of the entire cache object to the storage if it is not
         // scheduled yet
@@ -219,10 +219,11 @@ class ScopeCache
     clearVar(key: string): void
     {
         // if the same value for the key already exists in the cache, do nothing
-        if (this.vars && key in this.vars)
+        let vars = this.read();
+        if (key in vars)
         {
             // keep the new value in the cache
-            delete this.vars[key];
+            delete vars[key];
 
             // schedule serialization of the entire cache object to the storage if it is not
             // scheduled yet
@@ -231,9 +232,9 @@ class ScopeCache
     }
 
     /**
-     * Deserializes the object from the storage.
+     * Deserializes the object from the storage and returns it.
      */
-    private read(): void
+    private read(): { [Key: string]: any }
     {
         if (!this.vars)
         {
@@ -260,6 +261,8 @@ class ScopeCache
             else
                 this.vars = {};
         }
+
+        return this.vars;
     }
 
     /**

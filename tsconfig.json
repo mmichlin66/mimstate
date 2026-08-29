@@ -15,15 +15,14 @@
         "noEmitOnError": true,
         "useDefineForClassFields": false,
         "module": "esnext",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "esModuleInterop": true,
 		"target": "esnext",
 		"lib": [ "esnext", "dom" ],
 		"rootDir": "src",
 		"outDir": "./lib",
-        "baseUrl": ".",
         "paths": {
-            "mimstate": ["src/index.ts"]
+            "mimstate": ["./src/index.ts"]
         }
 	},
 
